@@ -796,27 +796,47 @@ html, body {
   margin-bottom: 16px;
 }
 
-/* Mobile Hamburger */
+/* Mobile Hamburger & Logout */
 .mobile-hamburger {
   display: none;
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
+  position: absolute;
+  top: 16px;
+  right: 16px;
   background: var(--gold);
   color: white;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
   border: none;
   z-index: 98;
-  box-shadow: 0 4px 12px rgba(171, 137, 79, 0.4);
   align-items: center;
   justify-content: center;
   cursor: pointer;
   transition: transform 0.2s;
 }
 .mobile-hamburger:active { transform: scale(0.95); }
-.mobile-hamburger svg { width: 24px; height: 24px; }
+.mobile-hamburger svg { width: 22px; height: 22px; }
+
+.mobile-logout {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 70px;
+  background: rgba(239, 68, 68, 0.1);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  height: 44px;
+  padding: 0 12px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  z-index: 98;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.2s;
+}
+.mobile-logout svg { width: 16px; height: 16px; }
 
 /* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
@@ -830,14 +850,15 @@ html, body {
 
   .main-content {
     margin-left: 0;
-    padding-bottom: 80px; /* Space for hamburger */
   }
 
   .topbar {
     padding: 16px 20px;
+    padding-right: 160px; /* Space for hamburger and logout */
     flex-direction: column;
     align-items: flex-start;
     gap: 12px;
+    min-height: 76px;
   }
   
   .topbar-actions {
@@ -855,7 +876,7 @@ html, body {
     grid-template-columns: 1fr;
   }
   
-  .mobile-hamburger {
+  .mobile-hamburger, .mobile-logout {
     display: flex;
   }
 
