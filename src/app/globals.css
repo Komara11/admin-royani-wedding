@@ -889,15 +889,16 @@ html, body {
   }
 
   .data-card {
-    padding: 16px;
+    padding: 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .data-table {
-    display: block;
+    display: table;
+    min-width: 700px;
     width: 100%;
-    overflow-x: auto;
     white-space: nowrap;
-    -webkit-overflow-scrolling: touch;
     border: none;
   }
 
