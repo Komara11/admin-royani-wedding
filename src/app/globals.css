@@ -799,7 +799,7 @@ html, body {
 /* Mobile Hamburger & Logout */
 .mobile-hamburger {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 16px;
   right: 16px;
   background: var(--gold);
@@ -819,7 +819,7 @@ html, body {
 
 .mobile-logout {
   display: none;
-  position: absolute;
+  position: fixed;
   top: 16px;
   right: 70px;
   background: rgba(239, 68, 68, 0.1);
@@ -872,6 +872,16 @@ html, body {
 
   .form-row {
     grid-template-columns: 1fr;
+  }
+  
+  .data-card-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .data-card-header .btn {
+    width: 100%;
   }
   
   .mobile-hamburger, .mobile-logout {
