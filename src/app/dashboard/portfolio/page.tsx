@@ -194,7 +194,7 @@ export default function PortfolioPage() {
                 <div className="form-group">
                   <label>Kategori</label>
                   <select value={editItem.category} onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}>
-                    <option>Resepsi</option><option>Akad</option><option>Outdoor</option>
+                    <option>Resepsi</option><option>Akad</option><option>Outdoor</option><option>Kimono</option>
                   </select>
                 </div>
                 <div className="form-group">
