@@ -151,20 +151,20 @@ export default function PortfolioPage() {
                 ) : (
                   items.map((item) => (
                     <tr key={item.id}>
-                      <td>
+                      <td data-label="Gambar">
                         <img src={item.image_url} alt={item.title} className="table-thumb" />
                       </td>
-                      <td><strong>{item.title}</strong></td>
-                      <td><span className="badge badge-gold">{item.category}</span></td>
-                      <td>{item.location}</td>
-                      <td><span className="badge badge-success">{item.grid_class}</span></td>
-                      <td>{item.sort_order}</td>
-                      <td>
+                      <td data-label="Judul"><strong>{item.title}</strong></td>
+                      <td data-label="Kategori"><span className="badge badge-gold">{item.category}</span></td>
+                      <td data-label="Lokasi">{item.location}</td>
+                      <td data-label="Grid"><span className="badge badge-success">{item.grid_class}</span></td>
+                      <td data-label="Urutan">{item.sort_order}</td>
+                      <td data-label="Status">
                         <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
                           {item.is_active ? "Aktif" : "Nonaktif"}
                         </span>
                       </td>
-                      <td>
+                      <td data-label="Aksi">
                         <div className="actions">
                           <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
                           <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>

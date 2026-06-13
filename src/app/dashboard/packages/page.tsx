@@ -150,12 +150,12 @@ export default function PackagesPage() {
                   <tr><td colSpan={6} className="empty-state">Belum ada data paket</td></tr>
                 ) : items.filter((i) => i.type === tab).map((item) => (
                   <tr key={item.id}>
-                    <td><span className={`badge ${item.type === "akad" ? "badge-info" : "badge-gold"}`}>{item.type.toUpperCase()}</span></td>
-                    <td><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sort_order} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
-                    <td>{item.price}</td>
-                    <td><span className="badge badge-outline">{item.sections.length} Bagian</span></td>
-                    <td><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
-                    <td>
+                    <td data-label="Tipe"><span className={`badge ${item.type === "akad" ? "badge-info" : "badge-gold"}`}>{item.type.toUpperCase()}</span></td>
+                    <td data-label="Nama Paket"><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sort_order} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
+                    <td data-label="Harga">{item.price}</td>
+                    <td data-label="Fitur & Bagian"><span className="badge badge-outline">{item.sections.length} Bagian</span></td>
+                    <td data-label="Status"><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
+                    <td data-label="Aksi">
                       <div className="actions">
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
                         <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>
