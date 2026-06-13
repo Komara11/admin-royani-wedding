@@ -140,37 +140,32 @@ export default function PackagesPage() {
         </div>
 
         <div className="data-card">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Nama Paket</th><th>Harga</th><th>Seksi</th><th>Urutan</th><th>Status</th><th>Unggulan</th><th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={7} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
-              ) : filtered.length === 0 ? (
-                <tr><td colSpan={7} className="empty-state">Belum ada paket {tab}</td></tr>
-              ) : (
-                filtered.map((pkg) => (
-                  <tr key={pkg.id}>
-                    <td><strong>{pkg.name}</strong></td>
-                    <td>{pkg.price}</td>
-                    <td>{pkg.sections.length} seksi</td>
-                    <td>{pkg.sort_order}</td>
-                    <td><span className={`badge ${pkg.is_active ? "badge-success" : "badge-danger"}`}>{pkg.is_active ? "Aktif" : "Nonaktif"}</span></td>
-                    <td>{pkg.featured ? <span className="badge badge-gold">Best Seller</span> : "—"}</td>
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead><tr><th>Tipe</th><th>Nama Paket</th><th>Harga</th><th>Fitur & Bagian</th><th>Status</th><th>Aksi</th></tr></thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={6} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
+                ) : items.length === 0 ? (
+                  <tr><td colSpan={6} className="empty-state">Belum ada data paket</td></tr>
+                ) : items.filter((i) => i.type === tab).map((item) => (
+                  <tr key={item.id}>
+                    <td><span className={`badge ${item.type === "akad" ? "badge-info" : "badge-gold"}`}>{item.type.toUpperCase()}</span></td>
+                    <td><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sort_order} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
+                    <td>{item.price}</td>
+                    <td><span className="badge badge-outline">{item.sections.length} Bagian</span></td>
+                    <td><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
                     <td>
                       <div className="actions">
-                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(pkg)}>Edit</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(pkg.id)}>Hapus</button>
+                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>
                       </div>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

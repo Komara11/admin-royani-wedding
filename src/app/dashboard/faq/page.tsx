@@ -56,28 +56,30 @@ export default function FaqPage() {
       </div>
       <div className="page-content">
         <div className="data-card">
-          <table className="data-table">
-            <thead><tr><th>Pertanyaan</th><th>Urutan</th><th>Status</th><th>Aksi</th></tr></thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={4} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
-              ) : items.length === 0 ? (
-                <tr><td colSpan={4} className="empty-state">Belum ada FAQ</td></tr>
-              ) : items.map((item) => (
-                <tr key={item.id}>
-                  <td><strong>{item.question}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.answer.substring(0, 80)}...</span></td>
-                  <td>{item.sort_order}</td>
-                  <td><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
-                  <td>
-                    <div className="actions">
-                      <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
-                      <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead><tr><th>Pertanyaan</th><th>Urutan</th><th>Status</th><th>Aksi</th></tr></thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={4} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
+                ) : items.length === 0 ? (
+                  <tr><td colSpan={4} className="empty-state">Belum ada FAQ</td></tr>
+                ) : items.map((item) => (
+                  <tr key={item.id}>
+                    <td><strong>{item.question}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.answer.substring(0, 80)}...</span></td>
+                    <td>{item.sort_order}</td>
+                    <td><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
+                    <td>
+                      <div className="actions">
+                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
+                        <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 

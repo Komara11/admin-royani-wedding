@@ -889,7 +889,12 @@ html, body {
   }
 
   .data-card {
-    padding: 0;
+    /* Retain natural padding for non-table cards */
+    margin-bottom: 24px;
+  }
+
+  .table-responsive {
+    width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }

@@ -129,51 +129,53 @@ export default function PortfolioPage() {
       </div>
       <div className="page-content">
         <div className="data-card">
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Gambar</th>
-                <th>Judul</th>
-                <th>Kategori</th>
-                <th>Lokasi</th>
-                <th>Grid</th>
-                <th>Urutan</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {loading ? (
-                <tr><td colSpan={8} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
-              ) : items.length === 0 ? (
-                <tr><td colSpan={8} className="empty-state">Belum ada data portfolio</td></tr>
-              ) : (
-                items.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      <img src={item.image_url} alt={item.title} className="table-thumb" />
-                    </td>
-                    <td><strong>{item.title}</strong></td>
-                    <td><span className="badge badge-gold">{item.category}</span></td>
-                    <td>{item.location}</td>
-                    <td><span className="badge badge-success">{item.grid_class}</span></td>
-                    <td>{item.sort_order}</td>
-                    <td>
-                      <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                        {item.is_active ? "Aktif" : "Nonaktif"}
-                      </span>
-                    </td>
-                    <td>
-                      <div className="actions">
-                        <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
-                        <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+          <div className="table-responsive">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>Gambar</th>
+                  <th>Judul</th>
+                  <th>Kategori</th>
+                  <th>Lokasi</th>
+                  <th>Grid</th>
+                  <th>Urutan</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                {loading ? (
+                  <tr><td colSpan={8} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
+                ) : items.length === 0 ? (
+                  <tr><td colSpan={8} className="empty-state">Belum ada data portfolio</td></tr>
+                ) : (
+                  items.map((item) => (
+                    <tr key={item.id}>
+                      <td>
+                        <img src={item.image_url} alt={item.title} className="table-thumb" />
+                      </td>
+                      <td><strong>{item.title}</strong></td>
+                      <td><span className="badge badge-gold">{item.category}</span></td>
+                      <td>{item.location}</td>
+                      <td><span className="badge badge-success">{item.grid_class}</span></td>
+                      <td>{item.sort_order}</td>
+                      <td>
+                        <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
+                          {item.is_active ? "Aktif" : "Nonaktif"}
+                        </span>
+                      </td>
+                      <td>
+                        <div className="actions">
+                          <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
+                          <button className="btn btn-danger btn-sm" onClick={() => setDeleteId(item.id)}>Hapus</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
