@@ -7,6 +7,7 @@ import { doc, getDoc, setDoc } from "firebase/firestore";
 interface HeroContent {
   subtitle: string; title_first: string; title_second: string;
   description: string; cta_text: string; scroll_text: string;
+  bg_image_url: string; parallax_image_url: string; parallax_quote: string;
 }
 
 interface AboutContent {
@@ -76,11 +77,20 @@ export default function ContentPage() {
               <div className="form-group"><label>Teks CTA</label><input value={hero.cta_text} onChange={(e) => setHero({ ...hero, cta_text: e.target.value })} /></div>
             </div>
             <div className="form-row">
-              <div className="form-group"><label>Judul Baris 1</label><input value={hero.title_first} onChange={(e) => setHero({ ...hero, title_first: e.target.value })} /></div>
+            <div className="form-group"><label>Judul Baris 1</label><input value={hero.title_first} onChange={(e) => setHero({ ...hero, title_first: e.target.value })} /></div>
               <div className="form-group"><label>Judul Baris 2</label><input value={hero.title_second} onChange={(e) => setHero({ ...hero, title_second: e.target.value })} /></div>
             </div>
             <div className="form-group"><label>Deskripsi</label><textarea value={hero.description} onChange={(e) => setHero({ ...hero, description: e.target.value })} rows={2} /></div>
-            <div className="form-group"><label>Teks Scroll</label><input value={hero.scroll_text} onChange={(e) => setHero({ ...hero, scroll_text: e.target.value })} /></div>
+            <div className="form-row">
+              <div className="form-group"><label>Teks Scroll</label><input value={hero.scroll_text} onChange={(e) => setHero({ ...hero, scroll_text: e.target.value })} /></div>
+              <div className="form-group"><label>URL Gambar Latar Belakang (Hero)</label><input value={hero.bg_image_url || ""} onChange={(e) => setHero({ ...hero, bg_image_url: e.target.value })} /></div>
+            </div>
+            <hr style={{ border: "none", borderTop: "1px solid var(--border-light)", margin: "16px 0" }} />
+            <h4 style={{ marginBottom: "12px", fontSize: "0.95rem", color: "var(--text-primary)" }}>🌌 Parallax Quote (Pemisah Halaman)</h4>
+            <div className="form-row">
+              <div className="form-group"><label>URL Gambar Parallax</label><input value={hero.parallax_image_url || ""} onChange={(e) => setHero({ ...hero, parallax_image_url: e.target.value })} /></div>
+            </div>
+            <div className="form-group"><label>Quote Parallax</label><textarea value={hero.parallax_quote || ""} onChange={(e) => setHero({ ...hero, parallax_quote: e.target.value })} rows={2} /></div>
             <button className="btn btn-primary btn-sm" onClick={() => saveSection("hero", hero)} disabled={saving === "hero"} style={{ marginTop: 8 }}>{saving === "hero" ? "Menyimpan..." : "Simpan Hero"}</button>
           </div>
         )}
