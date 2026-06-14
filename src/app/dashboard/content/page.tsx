@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
+import { db, storage } from "@/lib/firebase";
 import { doc, getDoc, setDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import imageCompression from "browser-image-compression";
 
 interface HeroContent {
   subtitle: string; title_first: string; title_second: string;
@@ -31,8 +33,44 @@ export default function ContentPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null);
+  const [uploading, setUploading] = useState<string | null>(null);
 
   const showToast = (msg: string, type = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, section: string, field: string) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    const file = e.target.files[0];
+    
+    setUploading(`${section}-${field}`);
+    try {
+      const options = {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      };
+      const compressedFile = await imageCompression(file, options);
+      
+      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "")}`;
+      const storageRef = ref(storage, `content/${fileName}`);
+      
+      const uploadResult = await uploadBytes(storageRef, compressedFile);
+      const url = await getDownloadURL(uploadResult.ref);
+      
+      if (section === "hero") {
+        setHero(prev => prev ? { ...prev, [field]: url } : prev);
+      } else if (section === "about") {
+        setAbout(prev => prev ? { ...prev, [field]: url } : prev);
+      }
+      
+      showToast("Gambar berhasil diunggah");
+    } catch (error) {
+      console.error(error);
+      showToast("Gagal mengunggah gambar", "error");
+    } finally {
+      setUploading(null);
+      e.target.value = '';
+    }
+  };
 
   useEffect(() => {
     async function load() {
@@ -83,13 +121,22 @@ export default function ContentPage() {
             <div className="form-group"><label>Deskripsi</label><textarea value={hero.description} onChange={(e) => setHero({ ...hero, description: e.target.value })} rows={2} /></div>
             <div className="form-row">
               <div className="form-group"><label>Teks Scroll</label><input value={hero.scroll_text} onChange={(e) => setHero({ ...hero, scroll_text: e.target.value })} /></div>
-              <div className="form-group"><label>URL Gambar Latar Belakang (Hero)</label><input value={hero.bg_image_url || ""} onChange={(e) => setHero({ ...hero, bg_image_url: e.target.value })} /></div>
+              <div className="form-group">
+                <label>URL Gambar Latar Belakang (Hero)</label>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input value={hero.bg_image_url || ""} onChange={(e) => setHero({ ...hero, bg_image_url: e.target.value })} style={{ flex: 1 }} placeholder="URL atau Upload..." />
+                  <label className="btn btn-outline btn-sm" style={{ cursor: "pointer", height: "auto", padding: "8px 12px", margin: 0, whiteSpace: "nowrap" }}>
+                    {uploading === "hero-bg_image_url" ? "Loading..." : "Upload"}
+                    <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleImageUpload(e, "hero", "bg_image_url")} />
+                  </label>
+                </div>
+              </div>
             </div>
             <hr style={{ border: "none", borderTop: "1px solid var(--border-light)", margin: "16px 0" }} />
             <h4 style={{ marginBottom: "12px", fontSize: "0.95rem", color: "var(--text-primary)" }}>🌌 Parallax Quote (Pemisah Halaman)</h4>
             <div className="form-row">
               <div className="form-group">
-                <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                   URL Gambar Parallax
                   <button 
                     type="button" 
@@ -100,7 +147,13 @@ export default function ContentPage() {
                     Reset ke Default
                   </button>
                 </label>
-                <input value={hero.parallax_image_url || ""} onChange={(e) => setHero({ ...hero, parallax_image_url: e.target.value })} />
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input value={hero.parallax_image_url || ""} onChange={(e) => setHero({ ...hero, parallax_image_url: e.target.value })} style={{ flex: 1 }} placeholder="URL atau Upload..." />
+                  <label className="btn btn-outline btn-sm" style={{ cursor: "pointer", height: "auto", padding: "8px 12px", margin: 0, whiteSpace: "nowrap" }}>
+                    {uploading === "hero-parallax_image_url" ? "Loading..." : "Upload"}
+                    <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleImageUpload(e, "hero", "parallax_image_url")} />
+                  </label>
+                </div>
               </div>
             </div>
             <div className="form-group"><label>Quote Parallax</label><textarea value={hero.parallax_quote || ""} onChange={(e) => setHero({ ...hero, parallax_quote: e.target.value })} rows={2} /></div>
@@ -114,7 +167,16 @@ export default function ContentPage() {
             <h3>📝 Tentang Kami</h3>
             <div className="form-row">
               <div className="form-group"><label>Tag</label><input value={about.tag} onChange={(e) => setAbout({ ...about, tag: e.target.value })} /></div>
-              <div className="form-group"><label>URL Gambar</label><input value={about.image_url} onChange={(e) => setAbout({ ...about, image_url: e.target.value })} /></div>
+              <div className="form-group">
+                <label>URL Gambar</label>
+                <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                  <input value={about.image_url} onChange={(e) => setAbout({ ...about, image_url: e.target.value })} style={{ flex: 1 }} placeholder="URL atau Upload..." />
+                  <label className="btn btn-outline btn-sm" style={{ cursor: "pointer", height: "auto", padding: "8px 12px", margin: 0, whiteSpace: "nowrap" }}>
+                    {uploading === "about-image_url" ? "Loading..." : "Upload"}
+                    <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => handleImageUpload(e, "about", "image_url")} />
+                  </label>
+                </div>
+              </div>
             </div>
             <div className="form-row">
               <div className="form-group"><label>Judul</label><input value={about.title_first} onChange={(e) => setAbout({ ...about, title_first: e.target.value })} /></div>
