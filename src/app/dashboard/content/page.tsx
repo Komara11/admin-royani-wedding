@@ -88,7 +88,20 @@ export default function ContentPage() {
             <hr style={{ border: "none", borderTop: "1px solid var(--border-light)", margin: "16px 0" }} />
             <h4 style={{ marginBottom: "12px", fontSize: "0.95rem", color: "var(--text-primary)" }}>🌌 Parallax Quote (Pemisah Halaman)</h4>
             <div className="form-row">
-              <div className="form-group"><label>URL Gambar Parallax</label><input value={hero.parallax_image_url || ""} onChange={(e) => setHero({ ...hero, parallax_image_url: e.target.value })} /></div>
+              <div className="form-group">
+                <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  URL Gambar Parallax
+                  <button 
+                    type="button" 
+                    className="btn btn-outline btn-sm" 
+                    style={{ padding: "2px 8px", fontSize: "0.75rem", height: "auto" }}
+                    onClick={() => setHero({ ...hero, parallax_image_url: "/images/bg-divider.jpg" })}
+                  >
+                    Reset ke Default
+                  </button>
+                </label>
+                <input value={hero.parallax_image_url || ""} onChange={(e) => setHero({ ...hero, parallax_image_url: e.target.value })} />
+              </div>
             </div>
             <div className="form-group"><label>Quote Parallax</label><textarea value={hero.parallax_quote || ""} onChange={(e) => setHero({ ...hero, parallax_quote: e.target.value })} rows={2} /></div>
             <button className="btn btn-primary btn-sm" onClick={() => saveSection("hero", hero)} disabled={saving === "hero"} style={{ marginTop: 8 }}>{saving === "hero" ? "Menyimpan..." : "Simpan Hero"}</button>
