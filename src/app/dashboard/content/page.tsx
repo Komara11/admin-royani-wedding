@@ -34,8 +34,6 @@ export default function ContentPage() {
   const [saving, setSaving] = useState<string | null>(null);
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null);
   const [uploading, setUploading] = useState<string | null>(null);
-  const [categories, setCategories] = useState<string[] | null>(null);
-  const [newCat, setNewCat] = useState("");
 
   const showToast = (msg: string, type = "success") => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
 
@@ -77,20 +75,14 @@ export default function ContentPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [hSnap, aSnap, cSnap, catSnap] = await Promise.all([
+        const [hSnap, aSnap, cSnap] = await Promise.all([
           getDoc(doc(db, "site_content", "hero")),
           getDoc(doc(db, "site_content", "about")),
           getDoc(doc(db, "site_content", "contact")),
-          getDoc(doc(db, "site_content", "portfolio_categories")),
         ]);
         if (hSnap.exists()) setHero(hSnap.data() as HeroContent);
         if (aSnap.exists()) setAbout(aSnap.data() as AboutContent);
         if (cSnap.exists()) setContact(cSnap.data() as ContactContent);
-        if (catSnap.exists() && catSnap.data().list) {
-          setCategories(catSnap.data().list as string[]);
-        } else {
-          setCategories(["Adat", "Resepsi", "Outdoor", "Kimono", "Dekorasi"]);
-        }
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }
@@ -103,32 +95,6 @@ export default function ContentPage() {
       await setDoc(doc(db, "site_content", section), data as Record<string, unknown>);
       showToast(`${section} berhasil disimpan`);
     } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
-    finally { setSaving(null); }
-  };
-
-  const addCategory = () => {
-    if (!newCat.trim() || !categories) return;
-    if (categories.includes(newCat.trim())) {
-      showToast("Kategori sudah ada", "error");
-      return;
-    }
-    const newList = [...categories, newCat.trim()];
-    setCategories(newList);
-    setNewCat("");
-  };
-
-  const removeCategory = (cat: string) => {
-    if (!categories) return;
-    const newList = categories.filter(c => c !== cat);
-    setCategories(newList);
-  };
-
-  const saveCategories = async () => {
-    setSaving("categories");
-    try {
-      await setDoc(doc(db, "site_content", "portfolio_categories"), { list: categories });
-      showToast("Kategori dokumentasi berhasil disimpan");
-    } catch (err) { console.error(err); showToast("Gagal menyimpan kategori", "error"); }
     finally { setSaving(null); }
   };
 
@@ -265,31 +231,6 @@ export default function ContentPage() {
             </div>
             <div className="form-group"><label>Form Deskripsi</label><textarea value={contact.form_description} onChange={(e) => setContact({ ...contact, form_description: e.target.value })} rows={2} /></div>
             <button className="btn btn-primary btn-sm" onClick={() => saveSection("contact", contact)} disabled={saving === "contact"} style={{ marginTop: 8 }}>{saving === "contact" ? "Menyimpan..." : "Simpan Kontak"}</button>
-          </div>
-        )}
-
-        {/* CATEGORIES */}
-        {categories && (
-          <div className="content-section">
-            <h3>📂 Kategori Dokumentasi (Portfolio)</h3>
-            <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "16px" }}>Kelola filter kategori yang akan muncul di dropdown saat menambah portfolio, dan tombol filter di halaman beranda web.</p>
-            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
-              {categories.map((cat) => (
-                <span key={cat} className="badge badge-outline" style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px", fontSize: "0.9rem" }}>
-                  {cat}
-                  <button onClick={() => removeCategory(cat)} style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
-                    <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
-                </span>
-              ))}
-            </div>
-            <div className="form-row" style={{ maxWidth: "400px" }}>
-              <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
-                <input value={newCat} onChange={(e) => setNewCat(e.target.value)} placeholder="Nama kategori baru..." onKeyDown={(e) => e.key === "Enter" && addCategory()} />
-              </div>
-              <button className="btn btn-outline" onClick={addCategory} style={{ height: "42px", marginTop: "24px" }}>Tambah</button>
-            </div>
-            <button className="btn btn-primary btn-sm" onClick={saveCategories} disabled={saving === "categories"} style={{ marginTop: 16 }}>{saving === "categories" ? "Menyimpan..." : "Simpan Perubahan Kategori"}</button>
           </div>
         )}
       </div>

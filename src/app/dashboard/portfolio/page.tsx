@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc
+  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc, setDoc
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
@@ -34,6 +34,9 @@ export default function PortfolioPage() {
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [categories, setCategories] = useState<string[]>(["Adat", "Resepsi", "Outdoor", "Kimono", "Dekorasi"]);
+  const [catModalOpen, setCatModalOpen] = useState(false);
+  const [newCat, setNewCat] = useState("");
+  const [savingCategories, setSavingCategories] = useState(false);
 
   const showToast = (msg: string, type = "success") => {
     setToast({ msg, type });
@@ -65,6 +68,34 @@ export default function PortfolioPage() {
     setEditItem({ ...emptyItem, sort_order: items.length });
     setImageFile(null);
     setModalOpen(true);
+  };
+
+  const addCategory = () => {
+    if (!newCat.trim()) return;
+    if (categories.includes(newCat.trim())) {
+      showToast("Kategori sudah ada", "error");
+      return;
+    }
+    setCategories([...categories, newCat.trim()]);
+    setNewCat("");
+  };
+
+  const removeCategory = (cat: string) => {
+    setCategories(categories.filter(c => c !== cat));
+  };
+
+  const saveCategories = async () => {
+    setSavingCategories(true);
+    try {
+      await setDoc(doc(db, "site_content", "portfolio_categories"), { list: categories });
+      showToast("Kategori berhasil disimpan");
+      setCatModalOpen(false);
+    } catch (err) {
+      console.error(err);
+      showToast("Gagal menyimpan kategori", "error");
+    } finally {
+      setSavingCategories(false);
+    }
   };
 
   const openEdit = (item: PortfolioItem) => {
@@ -131,7 +162,8 @@ export default function PortfolioPage() {
           <h1>Portfolio</h1>
           <p>Kelola foto galeri dokumentasi pernikahan</p>
         </div>
-        <div className="topbar-actions">
+        <div className="topbar-actions" style={{ display: "flex", gap: "8px" }}>
+          <button className="btn btn-outline btn-sm" onClick={() => setCatModalOpen(true)}>Kelola Kategori</button>
           <button className="btn btn-primary btn-sm" onClick={openCreate}>+ Tambah Foto</button>
         </div>
       </div>
@@ -186,6 +218,43 @@ export default function PortfolioPage() {
           </div>
         </div>
       </div>
+
+      {/* CATEGORIES MODAL */}
+      {catModalOpen && (
+        <div className="modal-backdrop" onClick={() => setCatModalOpen(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <h2>Kelola Kategori</h2>
+              <button className="modal-close" onClick={() => setCatModalOpen(false)}>✕</button>
+            </div>
+            <div className="modal-body">
+              <p style={{ fontSize: "0.85rem", color: "var(--text-muted)", marginBottom: "16px" }}>Kelola filter kategori yang akan muncul di halaman beranda web dan dropdown form portfolio ini.</p>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "16px" }}>
+                {categories.map((cat) => (
+                  <span key={cat} className="badge badge-outline" style={{ display: "flex", alignItems: "center", gap: "6px", padding: "6px 12px", fontSize: "0.9rem" }}>
+                    {cat}
+                    <button onClick={() => removeCategory(cat)} style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", display: "flex", alignItems: "center", padding: 0 }}>
+                      <svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="form-row">
+                <div className="form-group" style={{ flex: 1, marginBottom: 0 }}>
+                  <input value={newCat} onChange={(e) => setNewCat(e.target.value)} placeholder="Nama kategori baru..." onKeyDown={(e) => e.key === "Enter" && addCategory()} />
+                </div>
+                <button className="btn btn-outline" onClick={addCategory} style={{ height: "42px", marginTop: "0" }}>Tambah</button>
+              </div>
+            </div>
+            <div className="modal-footer">
+              <button className="btn btn-outline" onClick={() => setCatModalOpen(false)}>Batal</button>
+              <button className="btn btn-primary" onClick={saveCategories} disabled={savingCategories}>
+                {savingCategories ? "Menyimpan..." : "Simpan Perubahan"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* CREATE/EDIT MODAL */}
       {modalOpen && (
