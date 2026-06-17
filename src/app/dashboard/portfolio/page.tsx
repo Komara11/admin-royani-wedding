@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import {
-  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy,
+  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "@/lib/firebase";
@@ -33,6 +33,7 @@ export default function PortfolioPage() {
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
+  const [categories, setCategories] = useState<string[]>(["Adat", "Resepsi", "Outdoor", "Kimono", "Dekorasi"]);
 
   const showToast = (msg: string, type = "success") => {
     setToast({ msg, type });
@@ -41,9 +42,16 @@ export default function PortfolioPage() {
 
   const fetchItems = async () => {
     try {
+      // Fetch portfolio items
       const q = query(collection(db, "portfolio_items"), orderBy("sort_order"));
       const snap = await getDocs(q);
       setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() } as PortfolioItem)));
+
+      // Fetch categories
+      const catSnap = await getDoc(doc(db, "site_content", "portfolio_categories"));
+      if (catSnap.exists() && catSnap.data().list) {
+        setCategories(catSnap.data().list as string[]);
+      }
     } catch (err) {
       console.error(err);
     } finally {
@@ -196,7 +204,7 @@ export default function PortfolioPage() {
                 <div className="form-group">
                   <label>Kategori</label>
                   <select value={editItem.category} onChange={(e) => setEditItem({ ...editItem, category: e.target.value })}>
-                    <option>Resepsi</option><option>Akad</option><option>Outdoor</option><option>Kimono</option>
+                    {categories.map(cat => <option key={cat} value={cat}>{cat}</option>)}
                   </select>
                 </div>
                 <div className="form-group">
