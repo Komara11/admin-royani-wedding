@@ -128,7 +128,7 @@ export default function ContentPage() {
                     type="button" 
                     className="btn btn-outline btn-sm" 
                     style={{ padding: "2px 8px", fontSize: "0.75rem", height: "auto" }}
-                    onClick={() => setHero({ ...hero, bg_image_url: "/images/hero-premium.jpg" })}
+                    onClick={() => setHero({ ...hero, bg_image_url: "" })}
                   >
                     Reset ke Default
                   </button>
