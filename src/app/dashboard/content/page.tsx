@@ -162,7 +162,7 @@ export default function ContentPage() {
                     type="button" 
                     className="btn btn-outline btn-sm" 
                     style={{ padding: "2px 8px", fontSize: "0.75rem", height: "auto" }}
-                    onClick={() => setHero({ ...hero, bg_image_url: "/images/bg-hero.jpg" })}
+                    onClick={() => setHero({ ...hero, bg_image_url: "https://firebasestorage.googleapis.com/v0/b/royani-weding.firebasestorage.app/o/content%2F1781607573225_WhatsAppImage20260612at9.54.27PM3.jpeg?alt=media&token=a0251585-37df-40ed-99b6-7c8d5f67f862" })}
                   >
                     Reset ke Default
                   </button>
