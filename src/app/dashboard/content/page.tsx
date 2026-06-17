@@ -156,7 +156,17 @@ export default function ContentPage() {
             <div className="form-row">
               <div className="form-group"><label>Teks Scroll</label><input value={hero.scroll_text} onChange={(e) => setHero({ ...hero, scroll_text: e.target.value })} /></div>
               <div className="form-group">
-                <label>URL Gambar Latar Belakang (Hero)</label>
+                <label style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
+                  URL Gambar Latar Belakang (Hero)
+                  <button 
+                    type="button" 
+                    className="btn btn-outline btn-sm" 
+                    style={{ padding: "2px 8px", fontSize: "0.75rem", height: "auto" }}
+                    onClick={() => setHero({ ...hero, bg_image_url: "/images/bg-hero.jpg" })}
+                  >
+                    Reset ke Default
+                  </button>
+                </label>
                 <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
                   <input value={hero.bg_image_url || ""} onChange={(e) => setHero({ ...hero, bg_image_url: e.target.value })} style={{ flex: 1 }} placeholder="URL atau Upload..." />
                   <label className="btn btn-outline btn-sm" style={{ cursor: "pointer", height: "auto", padding: "8px 12px", margin: 0, whiteSpace: "nowrap" }}>
