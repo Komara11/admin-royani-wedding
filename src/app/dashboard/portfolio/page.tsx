@@ -115,9 +115,11 @@ export default function PortfolioPage() {
           maxSizeMB: 1,
           maxWidthOrHeight: 1920,
           useWebWorker: true,
+          fileType: "image/webp",
         };
         const compressedFile = await imageCompression(imageFile, options);
-        const storageRef = ref(storage, `portfolio/${Date.now()}_${compressedFile.name}`);
+        const originalName = imageFile.name.split('.').slice(0, -1).join('.') || imageFile.name;
+        const storageRef = ref(storage, `portfolio/${Date.now()}_${originalName}.webp`);
         const uploadResult = await uploadBytes(storageRef, compressedFile);
         finalImageUrl = await getDownloadURL(uploadResult.ref);
       }
