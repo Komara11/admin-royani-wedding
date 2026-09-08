@@ -10,6 +10,7 @@
     "postinstall": "prisma skills sync || exit 0"
   },
   "dependencies": {
+    "@prisma/client": "5.22.0",
     "browser-image-compression": "^2.0.2",
     "firebase": "^12.14.0",
     "next": "16.2.9",
@@ -22,7 +23,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
-    "prisma": "^8.0.0-rc.13",
+    "prisma": "5.22.0",
     "typescript": "^5"
   }
 }
