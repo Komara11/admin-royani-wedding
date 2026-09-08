@@ -5,6 +5,10 @@ import { AuthProvider } from "@/lib/auth-context";
 export const metadata: Metadata = {
   title: "Royani Admin — Panel Administrasi",
   description: "Admin panel untuk mengelola website Royani Wedding",
+  robots: "noindex, nofollow",
+  icons: {
+    icon: "/icon.png"
+  }
 };
 
 export default function RootLayout({

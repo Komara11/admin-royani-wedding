@@ -46,7 +46,7 @@ export default function PortfolioPage() {
   const fetchItems = async () => {
     try {
       // Fetch portfolio items
-      const q = query(collection(db, "portfolio_items"), orderBy("sort_order"));
+      const q = query(collection(db, "galeri_portfolio"), orderBy("sort_order"));
       const snap = await getDocs(q);
       setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() } as PortfolioItem)));
 
@@ -128,10 +128,10 @@ export default function PortfolioPage() {
       const dataToSave = { ...data, image_url: finalImageUrl };
 
       if (id) {
-        await updateDoc(doc(db, "portfolio_items", id), dataToSave);
+        await updateDoc(doc(db, "galeri_portfolio", id), dataToSave);
         showToast("Portfolio berhasil diperbarui");
       } else {
-        await addDoc(collection(db, "portfolio_items"), { ...dataToSave, created_at: new Date() });
+        await addDoc(collection(db, "galeri_portfolio"), { ...dataToSave, created_at: new Date() });
         showToast("Portfolio berhasil ditambahkan");
       }
       setModalOpen(false);
@@ -147,7 +147,7 @@ export default function PortfolioPage() {
   const handleDelete = async () => {
     if (!deleteId) return;
     try {
-      await deleteDoc(doc(db, "portfolio_items", deleteId));
+      await deleteDoc(doc(db, "galeri_portfolio", deleteId));
       showToast("Portfolio berhasil dihapus");
       setDeleteId(null);
       fetchItems();
