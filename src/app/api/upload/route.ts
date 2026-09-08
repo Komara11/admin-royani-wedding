@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
-import { v4 as uuidv4 } from "uuid";
 
 export async function POST(request: Request) {
   try {
@@ -15,7 +14,7 @@ export async function POST(request: Request) {
 
     const buffer = Buffer.from(await file.arrayBuffer());
     const ext = path.extname(file.name) || ".webp";
-    const filename = `${Date.now()}_${uuidv4()}${ext}`;
+    const filename = `${Date.now()}_${crypto.randomUUID()}${ext}`;
     
     // Choose upload directory (VPS or local fallback)
     const vpsDir = "/var/www/uploads";
