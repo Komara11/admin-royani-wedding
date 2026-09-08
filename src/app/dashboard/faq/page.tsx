@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { getFaqs, createFaq, updateFaq, deleteFaq, updateFaqOrder } from "@/app/actions";
 
 interface FAQ { id: string; question: string; answer: string; sort_order: number; is_active: boolean; }
 

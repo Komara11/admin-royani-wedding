@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
-import { collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy } from "firebase/firestore";
+import { getPackages, createPackage, updatePackage, deletePackage, updatePackageOrder } from "@/app/actions";
 
 interface Section { title: string; is_bonus: boolean; features: string[]; }
 interface Package {
@@ -56,20 +55,20 @@ export default function PackagesPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { id, ...data } = editItem as Package;
-      if (id) {
-        await updateDoc(doc(db, "pricing_packages", id), data);
-        showToast("Paket berhasil diperbarui");
+      if (editingId) {
+        await updatePackage(editingId, formData);
       } else {
-        await addDoc(collection(db, "pricing_packages"), data);
-        showToast("Paket berhasil ditambahkan");
+        await createPackage({ ...formData, sortOrder: packages.length });
       }
-      setModalOpen(false);
-      fetchItems();
+      setIsModalOpen(false);
+      const updated = await getPackages();
+      setPackages(updated as any);
     } catch (err) {
       console.error(err);
-      showToast("Gagal menyimpan", "error");
-    } finally { setSaving(false); }
+      alert("Gagal menyimpan");
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleDelete = async () => {

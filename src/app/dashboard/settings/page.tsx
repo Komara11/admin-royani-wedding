@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db, storage } from "@/lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getContent, updateContent } from "@/app/actions";
 import imageCompression from "browser-image-compression";
 
 interface SocialItem { platform: string; url: string; icon: string; }
@@ -23,12 +21,10 @@ export default function SettingsPage() {
   useEffect(() => {
     async function load() {
       try {
-        const [sSnap, fSnap] = await Promise.all([
-          getDoc(doc(db, "site_content", "social_media")),
-          getDoc(doc(db, "site_content", "footer")),
-        ]);
-        if (sSnap.exists()) setSocial(sSnap.data() as SocialMedia);
-        if (fSnap.exists()) setFooter(fSnap.data() as Footer);
+        const sSnap = await getContent("social_media");
+        const fSnap = await getContent("footer");
+        if (sSnap) setSocial(sSnap as any);
+        if (fSnap) setFooter(fSnap as any);
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }
@@ -38,7 +34,7 @@ export default function SettingsPage() {
   const saveSection = async (section: string, data: unknown) => {
     setSaving(section);
     try {
-      await setDoc(doc(db, "site_content", section), data as Record<string, unknown>);
+      await updateContent(section, data);
       showToast(`${section} berhasil disimpan`);
     } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
     finally { setSaving(null); }
@@ -50,14 +46,15 @@ export default function SettingsPage() {
     try {
       let finalLogoUrl = footer.logo_url || "";
       if (logoFile) {
-        const options = { maxSizeMB: 0.5, maxWidthOrHeight: 1024, useWebWorker: true };
-        const compressed = await imageCompression(logoFile, options);
-        const storageRef = ref(storage, `site/logo_${Date.now()}_${compressed.name}`);
-        const uploadRes = await uploadBytes(storageRef, compressed);
-        finalLogoUrl = await getDownloadURL(uploadRes.ref);
+        const upData = new FormData();
+        upData.append("file", logoFile);
+        upData.append("folder", "settings");
+        const res = await fetch("/api/upload", { method: "POST", body: upData });
+        const resData = await res.json();
+        if (resData.url) finalLogoUrl = resData.url;
       }
       const dataToSave = { ...footer, logo_url: finalLogoUrl };
-      await setDoc(doc(db, "site_content", "footer"), dataToSave);
+      await updateContent("footer", dataToSave);
       setFooter(dataToSave);
       setLogoFile(null);
       showToast("Footer & Logo berhasil disimpan");

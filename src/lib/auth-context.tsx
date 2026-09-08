@@ -1,9 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { onAuthStateChanged, User, signOut } from "firebase/auth";
-import { auth } from "./firebase";
+import { useRouter } from "next/navigation";
 
+interface User { email: string }
 interface AuthContextType {
   user: User | null;
   loading: boolean;
@@ -19,17 +19,22 @@ const AuthContext = createContext<AuthContextType>({
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-    return unsubscribe;
+    fetch("/api/auth/session")
+      .then(res => res.json())
+      .then(data => {
+        setUser(data.user);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, []);
 
   const logout = async () => {
-    await signOut(auth);
+    await fetch("/api/auth/logout", { method: "POST" });
+    setUser(null);
+    router.push("/login");
   };
 
   return (

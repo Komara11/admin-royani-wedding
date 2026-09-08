@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db } from "@/lib/firebase";
-import { collection, getDocs } from "firebase/firestore";
+import { getStats } from "@/app/actions";
 
 export default function DashboardPage() {
   const [stats, setStats] = useState({ portfolio: 0, packages: 0, faqs: 0 });
@@ -11,16 +10,8 @@ export default function DashboardPage() {
   useEffect(() => {
     async function fetchStats() {
       try {
-        const [portSnap, pkgSnap, faqSnap] = await Promise.all([
-          getDocs(collection(db, "portfolio_items")),
-          getDocs(collection(db, "pricing_packages")),
-          getDocs(collection(db, "faqs")),
-        ]);
-        setStats({
-          portfolio: portSnap.size,
-          packages: pkgSnap.size,
-          faqs: faqSnap.size,
-        });
+        const data = await getStats();
+        setStats(data);
       } catch (err) {
         console.error("Failed to fetch stats:", err);
       } finally {

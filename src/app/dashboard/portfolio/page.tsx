@@ -1,11 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-  collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, getDoc, setDoc
-} from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { db, storage } from "@/lib/firebase";
+import { getPortfolios, createPortfolio, updatePortfolio, deletePortfolio, updatePortfolioOrder, getContent, updateContent } from "@/app/actions";
 import imageCompression from "browser-image-compression";
 
 interface PortfolioItem {

@@ -1,9 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { db, storage } from "@/lib/firebase";
-import { doc, getDoc, setDoc } from "firebase/firestore";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getContent, updateContent } from "@/app/actions";
 import imageCompression from "browser-image-compression";
 
 interface HeroContent {
