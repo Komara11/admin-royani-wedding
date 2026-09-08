@@ -31,9 +31,8 @@ export default function PackagesPage() {
 
   const fetchItems = async () => {
     try {
-      const q = query(collection(db, "pricing_packages"), orderBy("sort_order"));
-      const snap = await getDocs(q);
-      setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() } as Package)));
+      const snap = await getPackages();
+      setItems(snap as any);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -55,33 +54,18 @@ export default function PackagesPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      if (editingId) {
-        await updatePackage(editingId, formData);
-      } else {
-        await createPackage({ ...formData, sortOrder: packages.length });
-      }
-      setIsModalOpen(false);
-      const updated = await getPackages();
-      setPackages(updated as any);
-    } catch (err) {
-      console.error(err);
-      alert("Gagal menyimpan");
-    } finally {
-      setSaving(false);
-    }
+      const { id, ...data } = editItem as Package;
+      if (id) { await updatePackage(id, data); showToast("Paket berhasil diperbarui"); }
+      else { await createPackage(data); showToast("Paket berhasil ditambahkan"); }
+      setModalOpen(false); fetchItems();
+    } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    try {
-      await deleteDoc(doc(db, "pricing_packages", deleteId));
-      showToast("Paket berhasil dihapus");
-      setDeleteId(null);
-      fetchItems();
-    } catch (err) {
-      console.error(err);
-      showToast("Gagal menghapus", "error");
-    }
+    try { await deletePackage(deleteId); showToast("Paket berhasil dihapus"); setDeleteId(null); fetchItems(); }
+    catch (err) { console.error(err); showToast("Gagal menghapus", "error"); }
   };
 
   // Section helpers

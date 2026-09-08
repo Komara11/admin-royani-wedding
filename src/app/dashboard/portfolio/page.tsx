@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { getPortfolios, createPortfolio, updatePortfolio, deletePortfolio, updatePortfolioOrder, getContent, updateContent } from "@/app/actions";
 import imageCompression from "browser-image-compression";
 
@@ -40,21 +41,15 @@ export default function PortfolioPage() {
 
   const fetchItems = async () => {
     try {
-      // Fetch portfolio items
-      const q = query(collection(db, "galeri_portfolio"), orderBy("sort_order"));
-      const snap = await getDocs(q);
-      setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() } as PortfolioItem)));
-
-      // Fetch categories
-      const catSnap = await getDoc(doc(db, "site_content", "portfolio_categories"));
-      if (catSnap.exists() && catSnap.data().list) {
-        setCategories(catSnap.data().list as string[]);
+      const snap = await getPortfolios();
+      setItems(snap as any);
+      
+      const catSnap = await getContent("portfolio_categories");
+      if (catSnap && (catSnap as any).list) {
+        setCategories((catSnap as any).list);
       }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error(err); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => { fetchItems(); }, []);
@@ -82,7 +77,7 @@ export default function PortfolioPage() {
   const saveCategories = async () => {
     setSavingCategories(true);
     try {
-      await setDoc(doc(db, "site_content", "portfolio_categories"), { list: categories });
+      await updateContent("portfolio_categories", { list: categories });
       showToast("Kategori berhasil disimpan");
       setCatModalOpen(false);
     } catch (err) {
@@ -113,20 +108,22 @@ export default function PortfolioPage() {
           fileType: "image/webp",
         };
         const compressedFile = await imageCompression(imageFile, options);
-        const originalName = imageFile.name.split('.').slice(0, -1).join('.') || imageFile.name;
-        const storageRef = ref(storage, `portfolio/${Date.now()}_${originalName}.webp`);
-        const uploadResult = await uploadBytes(storageRef, compressedFile);
-        finalImageUrl = await getDownloadURL(uploadResult.ref);
+        const upData = new FormData();
+        upData.append("file", compressedFile);
+        upData.append("folder", "portfolio");
+        const res = await fetch("/api/upload", { method: "POST", body: upData });
+        const resData = await res.json();
+        if (resData.url) finalImageUrl = resData.url;
       }
 
       const { id, ...data } = editItem as PortfolioItem;
       const dataToSave = { ...data, image_url: finalImageUrl };
 
       if (id) {
-        await updateDoc(doc(db, "galeri_portfolio", id), dataToSave);
+        await updatePortfolio(id, dataToSave);
         showToast("Portfolio berhasil diperbarui");
       } else {
-        await addDoc(collection(db, "galeri_portfolio"), { ...dataToSave, created_at: new Date() });
+        await createPortfolio({ ...dataToSave, sortOrder: items.length });
         showToast("Portfolio berhasil ditambahkan");
       }
       setModalOpen(false);
@@ -141,15 +138,8 @@ export default function PortfolioPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    try {
-      await deleteDoc(doc(db, "galeri_portfolio", deleteId));
-      showToast("Portfolio berhasil dihapus");
-      setDeleteId(null);
-      fetchItems();
-    } catch (err) {
-      console.error(err);
-      showToast("Gagal menghapus", "error");
-    }
+    try { await deletePortfolio(deleteId); showToast("Foto berhasil dihapus"); setDeleteId(null); fetchItems(); }
+    catch (err) { console.error(err); showToast("Gagal menghapus", "error"); }
   };
 
   return (

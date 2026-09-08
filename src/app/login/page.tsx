@@ -26,8 +26,17 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/dashboard");
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      if (res.ok) {
+        window.location.href = "/dashboard";
+      } else {
+        const data = await res.json();
+        setError(data.error || "Login gagal. Periksa kembali email dan password Anda.");
+      }
     } catch {
       setError("Email atau password salah. Silakan coba lagi.");
     } finally {

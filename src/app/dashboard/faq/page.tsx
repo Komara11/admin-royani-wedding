@@ -18,9 +18,8 @@ export default function FaqPage() {
 
   const fetchItems = async () => {
     try {
-      const q = query(collection(db, "faqs"), orderBy("sort_order"));
-      const snap = await getDocs(q);
-      setItems(snap.docs.map((d) => ({ id: d.id, ...d.data() } as FAQ)));
+      const snap = await getFaqs();
+      setItems(snap as any);
     } catch (err) { console.error(err); }
     finally { setLoading(false); }
   };
@@ -34,8 +33,8 @@ export default function FaqPage() {
     setSaving(true);
     try {
       const { id, ...data } = editItem as FAQ;
-      if (id) { await updateDoc(doc(db, "faqs", id), data); showToast("FAQ berhasil diperbarui"); }
-      else { await addDoc(collection(db, "faqs"), data); showToast("FAQ berhasil ditambahkan"); }
+      if (id) { await updateFaq(id, data); showToast("FAQ berhasil diperbarui"); }
+      else { await createFaq(data); showToast("FAQ berhasil ditambahkan"); }
       setModalOpen(false); fetchItems();
     } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
     finally { setSaving(false); }
@@ -43,7 +42,7 @@ export default function FaqPage() {
 
   const handleDelete = async () => {
     if (!deleteId) return;
-    try { await deleteDoc(doc(db, "faqs", deleteId)); showToast("FAQ berhasil dihapus"); setDeleteId(null); fetchItems(); }
+    try { await deleteFaq(deleteId); showToast("FAQ berhasil dihapus"); setDeleteId(null); fetchItems(); }
     catch (err) { console.error(err); showToast("Gagal menghapus", "error"); }
   };
 

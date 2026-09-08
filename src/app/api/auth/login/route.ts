@@ -21,8 +21,8 @@ export async function POST(request: Request) {
       .setIssuedAt()
       .setExpirationTime('24h')
       .sign(SECRET);
-
-    cookies().set('admin_token', token, {
+    const cookieStore = await cookies();
+    cookieStore.set('admin_token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'strict',

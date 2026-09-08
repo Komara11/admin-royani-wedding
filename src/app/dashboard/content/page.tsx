@@ -48,11 +48,15 @@ export default function ContentPage() {
       };
       const compressedFile = await imageCompression(file, options);
       
-      const fileName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.]/g, "")}`;
-      const storageRef = ref(storage, `content/${fileName}`);
+      const upData = new FormData();
+      upData.append("file", compressedFile);
+      upData.append("folder", "content");
       
-      const uploadResult = await uploadBytes(storageRef, compressedFile);
-      const url = await getDownloadURL(uploadResult.ref);
+      const res = await fetch("/api/upload", { method: "POST", body: upData });
+      const resData = await res.json();
+      
+      if (!res.ok) throw new Error(resData.error || "Upload gagal");
+      const url = resData.url;
       
       if (section === "hero") {
         setHero(prev => prev ? { ...prev, [field]: url } : prev);
@@ -74,13 +78,13 @@ export default function ContentPage() {
     async function load() {
       try {
         const [hSnap, aSnap, cSnap] = await Promise.all([
-          getDoc(doc(db, "site_content", "hero")),
-          getDoc(doc(db, "site_content", "about")),
-          getDoc(doc(db, "site_content", "contact")),
+          getContent("hero"),
+          getContent("about"),
+          getContent("contact"),
         ]);
-        if (hSnap.exists()) setHero(hSnap.data() as HeroContent);
-        if (aSnap.exists()) setAbout(aSnap.data() as AboutContent);
-        if (cSnap.exists()) setContact(cSnap.data() as ContactContent);
+        if (hSnap) setHero(hSnap as any);
+        if (aSnap) setAbout(aSnap as any);
+        if (cSnap) setContact(cSnap as any);
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }
@@ -90,7 +94,7 @@ export default function ContentPage() {
   const saveSection = async (section: string, data: unknown) => {
     setSaving(section);
     try {
-      await setDoc(doc(db, "site_content", section), data as Record<string, unknown>);
+      await updateContent(section, data);
       showToast(`${section} berhasil disimpan`);
     } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
     finally { setSaving(null); }
