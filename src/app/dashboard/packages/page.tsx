@@ -136,7 +136,7 @@ export default function PackagesPage() {
                     <td data-label="Tipe"><span className={`badge ${item.type === "akad" ? "badge-info" : "badge-gold"}`}>{item.type.toUpperCase()}</span></td>
                     <td data-label="Nama Paket"><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sort_order} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
                     <td data-label="Harga">{item.price}</td>
-                    <td data-label="Fitur & Bagian"><span className="badge badge-outline">{item.sections.length} Bagian</span></td>
+                    <td data-label="Fitur Utama"><span className="badge badge-outline">{item.sections[0]?.features?.length || 0} Fitur</span></td>
                     <td data-label="Status"><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
                     <td data-label="Aksi">
                       <div className="actions">

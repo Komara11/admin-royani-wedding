@@ -113,8 +113,6 @@ export default function ContentPage() {
           <div className="content-section">
             <h3>🏠 Hero (Halaman Utama)</h3>
             <div className="form-row">
-              <div className="form-group"><label>Subtitle</label><input value={hero.subtitle} onChange={(e) => setHero({ ...hero, subtitle: e.target.value })} /></div>
-              <div className="form-group"><label>Teks CTA</label><input value={hero.cta_text} onChange={(e) => setHero({ ...hero, cta_text: e.target.value })} /></div>
             </div>
             <div className="form-row">
             <div className="form-group"><label>Judul Baris 1</label><input value={hero.title_first} onChange={(e) => setHero({ ...hero, title_first: e.target.value })} /></div>

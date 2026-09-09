@@ -7,11 +7,7 @@ import { revalidatePath } from "next/cache";
 // PORTFOLIO ACTIONS
 // =======================
 export async function getPortfolios() {
-  try {
-    return await prisma.portfolio.findMany({ orderBy: { sortOrder: 'asc' } });
-  } catch (err) {
-    return [];
-  }
+  return await prisma.portfolio.findMany({ orderBy: { sortOrder: 'asc' } });
 }
 
 export async function createPortfolio(data: any) {
@@ -42,11 +38,7 @@ export async function updatePortfolioOrder(items: any[]) {
 // FAQ ACTIONS
 // =======================
 export async function getFaqs() {
-  try {
-    return await prisma.faqItem.findMany({ orderBy: { sortOrder: 'asc' } });
-  } catch (err) {
-    return [];
-  }
+  return await prisma.faqItem.findMany({ orderBy: { sortOrder: 'asc' } });
 }
 
 export async function createFaq(data: any) {
@@ -77,11 +69,7 @@ export async function updateFaqOrder(items: any[]) {
 // PACKAGE ACTIONS
 // =======================
 export async function getPackages() {
-  try {
-    return await prisma.package.findMany({ orderBy: { sortOrder: 'asc' } });
-  } catch (err) {
-    return [];
-  }
+  return await prisma.package.findMany({ orderBy: { sortOrder: 'asc' } });
 }
 
 export async function createPackage(data: any) {
@@ -112,12 +100,8 @@ export async function updatePackageOrder(items: any[]) {
 // CONTENT ACTIONS
 // =======================
 export async function getContent(id: string) {
-  try {
-    const doc = await prisma.siteContent.findUnique({ where: { id } });
-    return doc?.data || null;
-  } catch (err) {
-    return null;
-  }
+  const doc = await prisma.siteContent.findUnique({ where: { id } });
+  return doc?.data || null;
 }
 
 export async function updateContent(id: string, data: any) {
@@ -130,14 +114,10 @@ export async function updateContent(id: string, data: any) {
 
 
 export async function getStats() {
-  try {
-    const [portfolio, packages, faqs] = await Promise.all([
-      prisma.portfolio.count(),
-      prisma.package.count(),
-      prisma.faqItem.count()
-    ]);
-    return { portfolio, packages, faqs };
-  } catch (err) {
-    return { portfolio: 0, packages: 0, faqs: 0 };
-  }
+  const [portfolio, packages, faqs] = await Promise.all([
+    prisma.portfolio.count(),
+    prisma.package.count(),
+    prisma.faqItem.count()
+  ]);
+  return { portfolio, packages, faqs };
 }
