@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { getPackages, createPackage, updatePackage, deletePackage, updatePackageOrder } from "@/app/actions";
 
-interface Section { title: string; is_bonus: boolean; features: string[]; }
+
 interface Package {
   id: string; name: string; price: string; type: string;
-  featured: boolean; sort_order: number; is_active: boolean; sections: Section[];
+  featured: boolean; sort_order: number; is_active: boolean; sections: string[];
 }
 
 const emptyPkg: Omit<Package, "id"> = {
   name: "", price: "", type: "lengkap", featured: false,
-  sort_order: 0, is_active: true, sections: [{ title: "", is_bonus: false, features: [""] }],
+  sort_order: 0, is_active: true, sections: [""],
 };
 
 export default function PackagesPage() {
@@ -68,37 +68,16 @@ export default function PackagesPage() {
     catch (err) { console.error(err); showToast("Gagal menghapus", "error"); }
   };
 
-  // Section helpers
-  const updateSection = (idx: number, field: keyof Section, value: unknown) => {
-    const secs = [...editItem.sections];
-    secs[idx] = { ...secs[idx], [field]: value } as Section;
-    setEditItem({ ...editItem, sections: secs });
+  // Features helpers
+  const addFeature = () => setEditItem({ ...editItem, sections: [...editItem.sections, ""] });
+  const updateFeature = (idx: number, val: string) => {
+    const newSecs = [...editItem.sections];
+    newSecs[idx] = val;
+    setEditItem({ ...editItem, sections: newSecs });
   };
-
-  const addSection = () => {
-    setEditItem({ ...editItem, sections: [...editItem.sections, { title: "", is_bonus: false, features: [""] }] });
-  };
-
-  const removeSection = (idx: number) => {
-    setEditItem({ ...editItem, sections: editItem.sections.filter((_, i) => i !== idx) });
-  };
-
-  const updateFeature = (sIdx: number, fIdx: number, val: string) => {
-    const secs = [...editItem.sections];
-    secs[sIdx].features[fIdx] = val;
-    setEditItem({ ...editItem, sections: secs });
-  };
-
-  const addFeature = (sIdx: number) => {
-    const secs = [...editItem.sections];
-    secs[sIdx].features.push("");
-    setEditItem({ ...editItem, sections: secs });
-  };
-
-  const removeFeature = (sIdx: number, fIdx: number) => {
-    const secs = [...editItem.sections];
-    secs[sIdx].features = secs[sIdx].features.filter((_, i) => i !== fIdx);
-    setEditItem({ ...editItem, sections: secs });
+  const removeFeature = (idx: number) => {
+    const newSecs = editItem.sections.filter((_, i) => i !== idx);
+    setEditItem({ ...editItem, sections: newSecs });
   };
 
   return (
@@ -201,45 +180,21 @@ export default function PackagesPage() {
               <hr style={{ border: "none", borderTop: "1px solid var(--border-light)", margin: "20px 0" }} />
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
                 <strong>Seksi Paket</strong>
-                <button className="btn btn-outline btn-sm" onClick={addSection}>+ Tambah Seksi</button>
               </div>
-
-              {editItem.sections.map((sec, sIdx) => (
-                <div key={sIdx} className="section-editor">
-                  <div className="section-editor-header">
-                    <div className="form-row" style={{ flex: 1, gap: 12 }}>
-                      <input
-                        value={sec.title} placeholder="Judul Seksi (Dekorasi, Make-up, dll)"
-                        onChange={(e) => updateSection(sIdx, "title", e.target.value)}
-                        style={{ padding: "8px 12px", border: "1px solid var(--border)", borderRadius: 8, fontSize: "0.88rem", fontFamily: "inherit" }}
-                      />
-                      <div className="toggle-wrapper">
-                        <button className={`toggle ${sec.is_bonus ? "active" : ""}`} onClick={() => updateSection(sIdx, "is_bonus", !sec.is_bonus)} type="button" />
-                        <span style={{ fontSize: "0.8rem" }}>Bonus</span>
-                      </div>
-                    </div>
-                    {editItem.sections.length > 1 && (
-                      <button onClick={() => removeSection(sIdx)} style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", padding: 4, marginLeft: 8 }}>✕</button>
-                    )}
+              <div className="feature-list" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginTop: '16px' }}>
+                {editItem.sections.map((feat, idx) => (
+                  <div key={idx} className="feature-item" style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                    <input
+                      value={typeof feat === 'string' ? feat : (feat as any).title || (feat as any).features?.[0] || ""} 
+                      placeholder="Contoh: 1x sepasang busana akad"
+                      onChange={(e) => updateFeature(idx, e.target.value)}
+                      style={{ flex: 1, padding: "8px 12px", border: "1px solid var(--border)", borderRadius: 8, fontSize: "0.88rem", fontFamily: "inherit" }}
+                    />
+                    <button onClick={() => removeFeature(idx)} type="button" style={{ background: "none", border: "none", color: "var(--danger)", cursor: "pointer", padding: "8px" }}>✕</button>
                   </div>
-                  <div className="feature-list">
-                    {sec.features.map((f, fIdx) => (
-                      <div key={fIdx} className="feature-item">
-                        <input
-                          value={f} placeholder="Item fitur..."
-                          onChange={(e) => updateFeature(sIdx, fIdx, e.target.value)}
-                          style={{ padding: "8px 12px", border: "1px solid var(--border)", borderRadius: 8, fontSize: "0.85rem", fontFamily: "inherit" }}
-                        />
-                        {sec.features.length > 1 && (
-                          <button onClick={() => removeFeature(sIdx, fIdx)}>✕</button>
-                        )}
-                      </div>
-                    ))}
-                    <button className="btn btn-outline btn-sm" onClick={() => addFeature(sIdx)} style={{ alignSelf: "flex-start", marginTop: 4 }}>+ Fitur</button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+                <button type="button" className="btn btn-outline btn-sm" onClick={addFeature} style={{ alignSelf: 'flex-start', marginTop: '8px' }}>+ Tambah Fitur</button>
+              </div>
             <div className="modal-footer">
               <button className="btn btn-outline btn-sm" onClick={() => setModalOpen(false)}>Batal</button>
               <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>{saving ? "Menyimpan..." : "Simpan"}</button>
