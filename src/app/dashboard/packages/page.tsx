@@ -115,7 +115,7 @@ export default function PackagesPage() {
                     <td data-label="Tipe"><span className={`badge ${item.type === "akad" ? "badge-info" : "badge-gold"}`}>{item.type.toUpperCase()}</span></td>
                     <td data-label="Nama Paket"><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sort_order} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
                     <td data-label="Harga">{item.price}</td>
-                    <td data-label="Fitur Utama"><span className="badge badge-outline">{item.sections[0]?.features?.length || 0} Fitur</span></td>
+                    <td data-label="Fitur Utama"><span className="badge badge-outline">{item.sections.length || 0} Fitur</span></td>
                     <td data-label="Status"><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
                     <td data-label="Aksi">
                       <div className="actions">
@@ -195,6 +195,7 @@ export default function PackagesPage() {
                 ))}
                 <button type="button" className="btn btn-outline btn-sm" onClick={addFeature} style={{ alignSelf: 'flex-start', marginTop: '8px' }}>+ Tambah Fitur</button>
               </div>
+            </div>
             <div className="modal-footer">
               <button className="btn btn-outline btn-sm" onClick={() => setModalOpen(false)}>Batal</button>
               <button className="btn btn-primary btn-sm" onClick={handleSave} disabled={saving}>{saving ? "Menyimpan..." : "Simpan"}</button>
