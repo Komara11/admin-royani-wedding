@@ -6,12 +6,12 @@ import { getPackages, createPackage, updatePackage, deletePackage, updatePackage
 
 interface Package {
   id: string; name: string; price: string; type: string;
-  featured: boolean; sort_order: number; is_active: boolean; sections: string[];
+  featured: boolean; sortOrder: number; isActive: boolean; sections: string[];
 }
 
 const emptyPkg: Omit<Package, "id"> = {
   name: "", price: "", type: "lengkap", featured: false,
-  sort_order: 0, is_active: true, sections: [""],
+  sortOrder: 0, isActive: true, sections: [""],
 };
 
 export default function PackagesPage() {
@@ -42,7 +42,7 @@ export default function PackagesPage() {
   const filtered = items.filter((i) => i.type === tab);
 
   const openCreate = () => {
-    setEditItem({ ...emptyPkg, type: tab, sort_order: filtered.length });
+    setEditItem({ ...emptyPkg, type: tab, sortOrder: filtered.length });
     setModalOpen(true);
   };
 
@@ -113,10 +113,10 @@ export default function PackagesPage() {
                 ) : items.filter((i) => i.type === tab).map((item) => (
                   <tr key={item.id}>
                     <td data-label="Tipe"><span className={`badge ${item.type === "akad" ? "badge-info" : "badge-gold"}`}>{item.type.toUpperCase()}</span></td>
-                    <td data-label="Nama Paket"><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sort_order} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
+                    <td data-label="Nama Paket"><strong>{item.name}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>Urutan: {item.sortOrder} {item.featured && <span style={{ color: "var(--gold)" }}>★</span>}</span></td>
                     <td data-label="Harga">{item.price}</td>
                     <td data-label="Fitur Utama"><span className="badge badge-outline">{item.sections.length || 0} Fitur</span></td>
-                    <td data-label="Status"><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
+                    <td data-label="Status"><span className={`badge ${item.isActive ? "badge-success" : "badge-danger"}`}>{item.isActive ? "Aktif" : "Nonaktif"}</span></td>
                     <td data-label="Aksi">
                       <div className="actions">
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
@@ -167,13 +167,13 @@ export default function PackagesPage() {
                 </div>
                 <div className="form-group">
                   <label>Urutan</label>
-                  <input type="number" value={editItem.sort_order} onChange={(e) => setEditItem({ ...editItem, sort_order: Number(e.target.value) })} />
+                  <input type="number" value={editItem.sortOrder} onChange={(e) => setEditItem({ ...editItem, sortOrder: Number(e.target.value) })} />
                 </div>
               </div>
               <div className="form-row">
                 <div className="form-group">
                   <div className="toggle-wrapper">
-                    <button className={`toggle ${editItem.is_active ? "active" : ""}`} onClick={() => setEditItem({ ...editItem, is_active: !editItem.is_active })} type="button" />
+                    <button className={`toggle ${editItem.isActive ? "active" : ""}`} onClick={() => setEditItem({ ...editItem, isActive: !editItem.isActive })} type="button" />
                     <span style={{ fontSize: "0.88rem" }}>Aktif</span>
                   </div>
                 </div>
