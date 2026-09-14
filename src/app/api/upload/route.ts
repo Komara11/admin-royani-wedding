@@ -16,8 +16,8 @@ export async function POST(request: Request) {
     const ext = path.extname(file.name) || ".webp";
     const filename = `${Date.now()}_${crypto.randomUUID()}${ext}`;
     
-    // Choose upload directory (VPS or local fallback)
-    const vpsDir = "/var/www/uploads";
+    // Choose upload directory directly in the public website folder
+    const vpsDir = "/var/www/royani-wedding/public/uploads";
     let baseDir = vpsDir;
     
     try {
