@@ -23,6 +23,7 @@ export default function PackagesPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [isNewCategory, setIsNewCategory] = useState(false);
 
   const showToast = (msg: string, type = "success") => {
     setToast({ msg, type });
@@ -43,11 +44,13 @@ export default function PackagesPage() {
 
   const openCreate = () => {
     setEditItem({ ...emptyPkg, type: tab, sortOrder: filtered.length });
+    setIsNewCategory(false);
     setModalOpen(true);
   };
 
   const openEdit = (pkg: Package) => {
     setEditItem(pkg);
+    setIsNewCategory(false);
     setModalOpen(true);
   };
 
@@ -93,12 +96,15 @@ export default function PackagesPage() {
       </div>
       <div className="page-content">
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-          {(["lengkap", "akad"] as const).map((t) => (
-            <button key={t} className={`btn btn-sm ${tab === t ? "btn-primary" : "btn-outline"}`} onClick={() => setTab(t)}>
-              {t === "lengkap" ? "Paket Lengkap" : "Paket Akad"}
+        <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+          {Array.from(new Set(items.map((i: any) => i.type?.trim() || 'Lainnya'))).map((t: any) => (
+            <button key={t} className={`btn btn-sm ${tab === t ? "btn-primary" : "btn-outline"}`} onClick={() => setTab(t)} style={{ textTransform: 'capitalize' }}>
+              Paket {t}
             </button>
           ))}
+          {items.length === 0 && (
+            <button className="btn btn-sm btn-primary">Kategori Baru</button>
+          )}
         </div>
 
         <div className="data-card">
@@ -152,18 +158,46 @@ export default function PackagesPage() {
               </div>
               <div className="form-row">
                 <div className="form-group">
-                  <label>Kategori (Tipe)</label>
-                  <input 
-                    list="kategori-list" 
-                    value={editItem.type} 
-                    onChange={(e) => setEditItem({ ...editItem, type: e.target.value })} 
-                    placeholder="Contoh: akad, lengkap, custom..."
-                  />
-                  <datalist id="kategori-list">
-                    {Array.from(new Set(items.map((i: any) => i.type?.trim() || 'Lainnya'))).map((cat: any) => (
-                      <option key={cat} value={cat} />
-                    ))}
-                  </datalist>
+                  <label>Kategori Paket</label>
+                  {!isNewCategory ? (
+                    <select 
+                      value={Array.from(new Set(items.map((i: any) => i.type?.trim() || 'Lainnya'))).includes(editItem.type) ? editItem.type : 'new'} 
+                      onChange={(e) => {
+                        if (e.target.value === 'new') {
+                          setIsNewCategory(true);
+                          setEditItem({ ...editItem, type: '' });
+                        } else {
+                          setEditItem({ ...editItem, type: e.target.value });
+                        }
+                      }}
+                    >
+                      {Array.from(new Set(items.map((i: any) => i.type?.trim() || 'Lainnya'))).map((cat: any) => (
+                        <option key={cat} value={cat}>{cat}</option>
+                      ))}
+                      <option value="new">+ Tambah Kategori Baru...</option>
+                    </select>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <input 
+                        type="text" 
+                        value={editItem.type} 
+                        onChange={(e) => setEditItem({ ...editItem, type: e.target.value })} 
+                        placeholder="Ketik kategori baru (contoh: lamaran)"
+                        autoFocus
+                      />
+                      <button 
+                        type="button" 
+                        className="btn btn-outline" 
+                        onClick={() => {
+                          setIsNewCategory(false);
+                          const existingCats = Array.from(new Set(items.map((i: any) => i.type?.trim() || 'Lainnya'))) as string[];
+                          setEditItem({ ...editItem, type: existingCats.length > 0 ? existingCats[0] : 'lengkap' });
+                        }}
+                      >
+                        Batal
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
                   <label>Urutan</label>
