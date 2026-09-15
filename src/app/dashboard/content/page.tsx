@@ -24,6 +24,47 @@ interface ContactContent {
   form_tag: string; form_title: string; form_description: string;
 }
 
+
+  // Fallbacks so admin doesn't look empty initially
+  const defaultHero = {
+    subtitle: "WEDDING ORGANIZER",
+    title_first: "Royani",
+    title_second: "Wedding",
+    description: "Mewujudkan hari spesial Anda menjadi sempurna, berkesan, dan elegan lewat layanan profesional kami.",
+    cta_text: "Konsultasi Gratis",
+    bg_image_url: "/images/bg-hero.jpg",
+    parallax_image_url: "/images/bg-divider.jpg",
+    parallax_quote: "Cinta tidak hanya tentang saling memandang, melainkan bersama-sama melihat ke satu arah yang sama dengan komitmen dan ketulusan abadi.",
+  };
+
+  const defaultAbout = {
+    tag: "TENTANG KAMI",
+    title_first: "Mewujudkan Momen",
+    title_highlight: "Paling Berharga",
+    paragraph_1: "Royani Wedding adalah mitra wedding organizer profesional di Majalengka yang berdedikasi tinggi untuk mewujudkan konsep pernikahan impian Anda. Kami memadukan nilai artistik dan detail organisasi terbaik demi kenyamanan seluruh rangkaian acara Anda.",
+    paragraph_2: "Dari konsep tata rias anggun, dekorasi megah, hingga pengaturan alur acara di lapangan, kami memberikan sentuhan elegan dan perhatian penuh di setiap detiknya.",
+    quote: "Pernikahan adalah simfoni cinta yang diabadikan dalam janji suci. Kami hadir untuk memastikan simfoni tersebut mengalun sempurna.",
+    image_url: "/images/about.jpg",
+    metrics: [
+      { value: "500+", label: "Acara Sukses" },
+      { value: "50+", label: "Mitra Vendor" },
+      { value: "8+", label: "Tahun Pengalaman" }
+    ],
+  };
+
+  const defaultContact = {
+    tag: "KONSULTASI GRATIS",
+    title_first: "Mari Rencanakan",
+    title_highlight: "Hari Spesial Anda",
+    description: "Konsultasikan konsep pernikahan impian Anda bersama tim kami. Kami siap memberikan solusi terbaik sesuai dengan anggaran dan kebutuhan Anda.",
+    whatsapp_number: "+62 878 4722 2209",
+    address: "Blok Rabu RT.03/RW.02 No.81, Beusi, Ligung, Majalengka",
+    maps_embed_url: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1154.5123991206124!2d108.2721081!3d-6.6669931!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6ede115166299b%3A0xe54c86e245a4ecb4!2sRoyani%20Wedding!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid",
+    form_tag: "HUBUNGI KAMI",
+    form_title: "Tinggalkan Pesan",
+    form_description: "Isi form di bawah ini dan tim kami akan segera menghubungi Anda melalui WhatsApp."
+  };
+
 export default function ContentPage() {
   const [hero, setHero] = useState<HeroContent | null>(null);
   const [about, setAbout] = useState<AboutContent | null>(null);
@@ -82,9 +123,9 @@ export default function ContentPage() {
           getContent("about"),
           getContent("contact"),
         ]);
-        if (hSnap) setHero({ ...defaultHero, ...(hSnap as any) });
-        if (aSnap) setAbout({ ...defaultAbout, ...(aSnap as any) });
-        if (cSnap) setContact({ ...defaultContact, ...(cSnap as any) });
+        setHero({ ...defaultHero, ...(hSnap || {} as any) });
+        setAbout({ ...defaultAbout, ...(aSnap || {} as any) });
+        setContact({ ...defaultContact, ...(cSnap || {} as any) });
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }
