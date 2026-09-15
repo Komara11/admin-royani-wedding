@@ -82,9 +82,9 @@ export default function ContentPage() {
           getContent("about"),
           getContent("contact"),
         ]);
-        if (hSnap) setHero(hSnap as any);
-        if (aSnap) setAbout(aSnap as any);
-        if (cSnap) setContact(cSnap as any);
+        if (hSnap) setHero({ ...defaultHero, ...(hSnap as any) });
+        if (aSnap) setAbout({ ...defaultAbout, ...(aSnap as any) });
+        if (cSnap) setContact({ ...defaultContact, ...(cSnap as any) });
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     }

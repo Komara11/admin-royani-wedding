@@ -16,30 +16,32 @@ export async function POST(request: Request) {
     const ext = path.extname(file.name) || ".webp";
     const filename = `${Date.now()}_${crypto.randomUUID()}${ext}`;
     
-    // Choose upload directory directly in the public website folder
-    const vpsDir = "/var/www/royani-wedding/public/uploads";
-    let baseDir = vpsDir;
+    // Save to the public website's uploads folder
+    const publicUploadsDir = "/var/www/royani-wedding/public/uploads";
+    let savedToPublic = false;
+    let baseDir: string;
     
     try {
-      await mkdir(vpsDir, { recursive: true });
-    } catch (err) {
+      await mkdir(path.join(publicUploadsDir, folder), { recursive: true });
+      baseDir = publicUploadsDir;
+      savedToPublic = true;
+    } catch {
+      // Fallback to local admin public folder
       baseDir = path.join(process.cwd(), "public", "uploads");
-      await mkdir(baseDir, { recursive: true });
+      await mkdir(path.join(baseDir, folder), { recursive: true });
     }
     
-    const targetFolder = path.join(baseDir, folder);
-    await mkdir(targetFolder, { recursive: true });
-    
-    const filePath = path.join(targetFolder, filename);
+    const filePath = path.join(baseDir, folder, filename);
     await writeFile(filePath, buffer);
     
-    // Nginx will serve /var/www/uploads via /uploads/ alias, so return the URL
-    // If local, Next.js will serve public/uploads via /uploads/
-    const url = `https://royaniwedding.com/uploads/${folder}/${filename}`;
+    // Always return the public site URL so images display correctly everywhere
+    const url = `https://royaniwedding.com/api/media/${folder}/${filename}`;
+    
+    console.log(`[Upload] Saved to: ${filePath}, URL: ${url}, savedToPublic: ${savedToPublic}`);
     
     return NextResponse.json({ url });
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json({ error: "Upload failed" }, { status: 500 });
+    return NextResponse.json({ error: "Upload failed: " + (error as Error).message }, { status: 500 });
   }
 }
