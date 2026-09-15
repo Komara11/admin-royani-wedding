@@ -187,7 +187,7 @@ export default function PortfolioPage() {
                   items.map((item) => (
                     <tr key={item.id}>
                       <td data-label="Gambar">
-                        <img src={item.imageUrl} alt={item.title} className="table-thumb" />
+                        <img src={item.imageUrl?.startsWith("/") ? `https://royaniwedding.com${item.imageUrl}` : item.imageUrl} alt={item.title} className="table-thumb" style={{ objectFit: "cover", width: "60px", height: "60px", borderRadius: "8px" }} />
                       </td>
                       <td data-label="Judul"><strong>{item.title}</strong></td>
                       <td data-label="Kategori"><span className="badge badge-gold">{item.category}</span></td>
@@ -296,6 +296,7 @@ export default function PortfolioPage() {
                   disabled={!!imageFile}
                 />
                 {imageFile && <small style={{ color: "var(--success)", display: "block", marginTop: "4px" }}>File siap diunggah: {imageFile.name}</small>}
+                {!imageFile && editItem.imageUrl && <div style={{marginTop: "8px"}}><img src={editItem.imageUrl?.startsWith("/") ? `https://royaniwedding.com${editItem.imageUrl}` : editItem.imageUrl} style={{ height: "80px", borderRadius: "4px", objectFit: "cover" }} /></div>}
               </div>
               <div className="form-row">
                 <div className="form-group">

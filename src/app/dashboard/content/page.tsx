@@ -143,6 +143,7 @@ export default function ContentPage() {
               </div>
             </div>
             <hr style={{ border: "none", borderTop: "1px solid var(--border-light)", margin: "16px 0" }} />
+                { hero.bg_image_url && <div style={{marginTop: "12px"}}><img src={hero.bg_image_url?.startsWith("/") ? `https://royaniwedding.com${hero.bg_image_url}` : hero.bg_image_url} style={{ height: "100px", borderRadius: "8px", objectFit: "cover", border: "1px solid var(--border-light)" }} /></div> }
             <h4 style={{ marginBottom: "12px", fontSize: "0.95rem", color: "var(--text-primary)" }}>🌌 Parallax Quote (Pemisah Halaman)</h4>
             <div className="form-row">
               <div className="form-group">
@@ -166,7 +167,8 @@ export default function ContentPage() {
                 </div>
               </div>
             </div>
-            <div className="form-group"><label>Quote Parallax</label><textarea value={hero.parallax_quote || ""} onChange={(e) => setHero({ ...hero, parallax_quote: e.target.value })} rows={2} /></div>
+            <div className="form-group"><label>Quote Parallax</label>
+                { hero.parallax_image_url && <div style={{marginTop: "12px"}}><img src={hero.parallax_image_url?.startsWith("/") ? `https://royaniwedding.com${hero.parallax_image_url}` : hero.parallax_image_url} style={{ height: "100px", borderRadius: "8px", objectFit: "cover", border: "1px solid var(--border-light)" }} /></div> }<textarea value={hero.parallax_quote || ""} onChange={(e) => setHero({ ...hero, parallax_quote: e.target.value })} rows={2} /></div>
             <button className="btn btn-primary btn-sm" onClick={() => saveSection("hero", hero)} disabled={saving === "hero"} style={{ marginTop: 8 }}>{saving === "hero" ? "Menyimpan..." : "Simpan Hero"}</button>
           </div>
         )}
@@ -189,7 +191,8 @@ export default function ContentPage() {
               </div>
             </div>
             <div className="form-row">
-              <div className="form-group"><label>Judul</label><input value={about.title_first} onChange={(e) => setAbout({ ...about, title_first: e.target.value })} /></div>
+              <div className="form-group"><label>Judul</label>
+                { about.image_url && <div style={{marginTop: "12px"}}><img src={about.image_url?.startsWith("/") ? `https://royaniwedding.com${about.image_url}` : about.image_url} style={{ height: "100px", borderRadius: "8px", objectFit: "cover", border: "1px solid var(--border-light)" }} /></div> }<input value={about.title_first} onChange={(e) => setAbout({ ...about, title_first: e.target.value })} /></div>
               <div className="form-group"><label>Judul Highlight</label><input value={about.title_highlight} onChange={(e) => setAbout({ ...about, title_highlight: e.target.value })} /></div>
             </div>
             <div className="form-group"><label>Paragraf 1</label><textarea value={about.paragraph_1} onChange={(e) => setAbout({ ...about, paragraph_1: e.target.value })} rows={3} /></div>
