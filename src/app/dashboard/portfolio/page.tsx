@@ -9,15 +9,15 @@ interface PortfolioItem {
   title: string;
   category: string;
   location: string;
-  image_url: string;
-  grid_class: string;
-  sort_order: number;
-  is_active: boolean;
+  imageUrl: string;
+  gridClass: string;
+  sortOrder: number;
+  isActive: boolean;
 }
 
 const emptyItem: Omit<PortfolioItem, "id"> = {
-  title: "", category: "Resepsi", location: "", image_url: "",
-  grid_class: "col-6", sort_order: 0, is_active: true,
+  title: "", category: "Resepsi", location: "", imageUrl: "",
+  gridClass: "col-6", sortOrder: 0, isActive: true,
 };
 
 export default function PortfolioPage() {
@@ -55,7 +55,7 @@ export default function PortfolioPage() {
   useEffect(() => { fetchItems(); }, []);
 
   const openCreate = () => {
-    setEditItem({ ...emptyItem, sort_order: items.length });
+    setEditItem({ ...emptyItem, sortOrder: items.length });
     setImageFile(null);
     setModalOpen(true);
   };
@@ -97,7 +97,7 @@ export default function PortfolioPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      let finalImageUrl = editItem.image_url;
+      let finalImageUrl = editItem.imageUrl;
 
       // Handle file upload if a new file is selected
       if (imageFile) {
@@ -116,21 +116,29 @@ export default function PortfolioPage() {
         if (resData.url) finalImageUrl = resData.url;
       }
 
-      const { id, ...data } = editItem as PortfolioItem;
-      const dataToSave = { ...data, image_url: finalImageUrl };
+      const { id, ...rest } = editItem as PortfolioItem;
+      const dataToSave = {
+        title: rest.title,
+        category: rest.category,
+        location: rest.location,
+        imageUrl: finalImageUrl,
+        gridClass: rest.gridClass,
+        sortOrder: rest.sortOrder,
+        isActive: rest.isActive,
+      };
 
       if (id) {
         await updatePortfolio(id, dataToSave);
         showToast("Portfolio berhasil diperbarui");
       } else {
-        await createPortfolio({ ...dataToSave, sortOrder: items.length });
+        await createPortfolio(dataToSave);
         showToast("Portfolio berhasil ditambahkan");
       }
       setModalOpen(false);
       fetchItems();
     } catch (err) {
       console.error(err);
-      showToast("Gagal menyimpan data", "error");
+      showToast("Gagal menyimpan data: " + (err as Error).message, "error");
     } finally {
       setSaving(false);
     }
@@ -179,16 +187,16 @@ export default function PortfolioPage() {
                   items.map((item) => (
                     <tr key={item.id}>
                       <td data-label="Gambar">
-                        <img src={item.image_url} alt={item.title} className="table-thumb" />
+                        <img src={item.imageUrl} alt={item.title} className="table-thumb" />
                       </td>
                       <td data-label="Judul"><strong>{item.title}</strong></td>
                       <td data-label="Kategori"><span className="badge badge-gold">{item.category}</span></td>
                       <td data-label="Lokasi">{item.location}</td>
-                      <td data-label="Grid"><span className="badge badge-success">{item.grid_class}</span></td>
-                      <td data-label="Urutan">{item.sort_order}</td>
+                      <td data-label="Grid"><span className="badge badge-success">{item.gridClass}</span></td>
+                      <td data-label="Urutan">{item.sortOrder}</td>
                       <td data-label="Status">
-                        <span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>
-                          {item.is_active ? "Aktif" : "Nonaktif"}
+                        <span className={`badge ${item.isActive ? "badge-success" : "badge-danger"}`}>
+                          {item.isActive ? "Aktif" : "Nonaktif"}
                         </span>
                       </td>
                       <td data-label="Aksi">
@@ -281,8 +289,8 @@ export default function PortfolioPage() {
                   style={{ marginBottom: "8px" }}
                 />
                 <input 
-                  value={editItem.image_url} 
-                  onChange={(e) => setEditItem({ ...editItem, image_url: e.target.value })} 
+                  value={editItem.imageUrl} 
+                  onChange={(e) => setEditItem({ ...editItem, imageUrl: e.target.value })} 
                   placeholder="URL Gambar (Atau upload file di atas)" 
                   style={{ opacity: 0.6, fontSize: "0.85rem" }}
                   disabled={!!imageFile}
@@ -292,7 +300,7 @@ export default function PortfolioPage() {
               <div className="form-row">
                 <div className="form-group">
                   <label>Ukuran Grid</label>
-                  <select value={editItem.grid_class} onChange={(e) => setEditItem({ ...editItem, grid_class: e.target.value })}>
+                  <select value={editItem.gridClass} onChange={(e) => setEditItem({ ...editItem, gridClass: e.target.value })}>
                     <option value="col-4">Kecil (col-4)</option>
                     <option value="col-6">Sedang (col-6)</option>
                     <option value="col-8">Besar (col-8)</option>
@@ -300,12 +308,12 @@ export default function PortfolioPage() {
                 </div>
                 <div className="form-group">
                   <label>Urutan</label>
-                  <input type="number" value={editItem.sort_order} onChange={(e) => setEditItem({ ...editItem, sort_order: Number(e.target.value) })} />
+                  <input type="number" value={editItem.sortOrder} onChange={(e) => setEditItem({ ...editItem, sortOrder: Number(e.target.value) })} />
                 </div>
               </div>
               <div className="form-group">
                 <div className="toggle-wrapper">
-                  <button className={`toggle ${editItem.is_active ? "active" : ""}`} onClick={() => setEditItem({ ...editItem, is_active: !editItem.is_active })} type="button" />
+                  <button className={`toggle ${editItem.isActive ? "active" : ""}`} onClick={() => setEditItem({ ...editItem, isActive: !editItem.isActive })} type="button" />
                   <span style={{ fontSize: "0.88rem" }}>Aktif (tampil di website)</span>
                 </div>
               </div>

@@ -57,11 +57,20 @@ export default function PackagesPage() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { id, ...data } = editItem as Package;
-      if (id) { await updatePackage(id, data); showToast("Paket berhasil diperbarui"); }
-      else { await createPackage(data); showToast("Paket berhasil ditambahkan"); }
+      const { id, ...rest } = editItem as Package;
+      const dataToSave = {
+        name: rest.name,
+        price: rest.price,
+        type: rest.type,
+        featured: rest.featured,
+        sortOrder: rest.sortOrder,
+        isActive: rest.isActive,
+        sections: rest.sections,
+      };
+      if (id) { await updatePackage(id, dataToSave); showToast("Paket berhasil diperbarui"); }
+      else { await createPackage(dataToSave); showToast("Paket berhasil ditambahkan"); }
       setModalOpen(false); fetchItems();
-    } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
+    } catch (err) { console.error(err); showToast("Gagal menyimpan: " + (err as Error).message, "error"); }
     finally { setSaving(false); }
   };
 

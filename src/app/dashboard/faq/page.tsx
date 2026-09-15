@@ -3,13 +3,13 @@
 import { useEffect, useState } from "react";
 import { getFaqs, createFaq, updateFaq, deleteFaq, updateFaqOrder } from "@/app/actions";
 
-interface FAQ { id: string; question: string; answer: string; sort_order: number; is_active: boolean; }
+interface FAQ { id: string; question: string; answer: string; sortOrder: number; }
 
 export default function FaqPage() {
   const [items, setItems] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
-  const [editItem, setEditItem] = useState<Omit<FAQ, "id"> & { id?: string }>({ question: "", answer: "", sort_order: 0, is_active: true });
+  const [editItem, setEditItem] = useState<Omit<FAQ, "id"> & { id?: string }>({ question: "", answer: "", sortOrder: 0 });
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: string } | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
@@ -26,17 +26,22 @@ export default function FaqPage() {
 
   useEffect(() => { fetchItems(); }, []);
 
-  const openCreate = () => { setEditItem({ question: "", answer: "", sort_order: items.length, is_active: true }); setModalOpen(true); };
+  const openCreate = () => { setEditItem({ question: "", answer: "", sortOrder: items.length }); setModalOpen(true); };
   const openEdit = (item: FAQ) => { setEditItem(item); setModalOpen(true); };
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      const { id, ...data } = editItem as FAQ;
-      if (id) { await updateFaq(id, data); showToast("FAQ berhasil diperbarui"); }
-      else { await createFaq(data); showToast("FAQ berhasil ditambahkan"); }
+      const { id, ...rest } = editItem as FAQ;
+      const dataToSave = {
+        question: rest.question,
+        answer: rest.answer,
+        sortOrder: rest.sortOrder,
+      };
+      if (id) { await updateFaq(id, dataToSave); showToast("FAQ berhasil diperbarui"); }
+      else { await createFaq(dataToSave); showToast("FAQ berhasil ditambahkan"); }
       setModalOpen(false); fetchItems();
-    } catch (err) { console.error(err); showToast("Gagal menyimpan", "error"); }
+    } catch (err) { console.error(err); showToast("Gagal menyimpan: " + (err as Error).message, "error"); }
     finally { setSaving(false); }
   };
 
@@ -56,17 +61,16 @@ export default function FaqPage() {
         <div className="data-card">
           <div className="table-responsive">
             <table className="data-table">
-              <thead><tr><th>Pertanyaan</th><th>Urutan</th><th>Status</th><th>Aksi</th></tr></thead>
+              <thead><tr><th>Pertanyaan</th><th>Urutan</th><th>Aksi</th></tr></thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan={4} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
+                  <tr><td colSpan={3} style={{ textAlign: "center", padding: 40 }}><div className="spinner" style={{ margin: "0 auto" }} /></td></tr>
                 ) : items.length === 0 ? (
-                  <tr><td colSpan={4} className="empty-state">Belum ada FAQ</td></tr>
+                  <tr><td colSpan={3} className="empty-state">Belum ada FAQ</td></tr>
                 ) : items.map((item) => (
                   <tr key={item.id}>
                     <td data-label="Pertanyaan"><strong>{item.question}</strong><br /><span style={{ fontSize: "0.8rem", color: "var(--text-muted)" }}>{item.answer.substring(0, 80)}...</span></td>
-                    <td data-label="Urutan">{item.sort_order}</td>
-                    <td data-label="Status"><span className={`badge ${item.is_active ? "badge-success" : "badge-danger"}`}>{item.is_active ? "Aktif" : "Nonaktif"}</span></td>
+                    <td data-label="Urutan">{item.sortOrder}</td>
                     <td data-label="Aksi">
                       <div className="actions">
                         <button className="btn btn-outline btn-sm" onClick={() => openEdit(item)}>Edit</button>
@@ -88,10 +92,7 @@ export default function FaqPage() {
             <div className="modal-body">
               <div className="form-group"><label>Pertanyaan</label><input value={editItem.question} onChange={(e) => setEditItem({ ...editItem, question: e.target.value })} placeholder="Apakah paket bisa disesuaikan?" /></div>
               <div className="form-group"><label>Jawaban</label><textarea value={editItem.answer} onChange={(e) => setEditItem({ ...editItem, answer: e.target.value })} placeholder="Ya, semua paket fleksibel..." rows={4} /></div>
-              <div className="form-row">
-                <div className="form-group"><label>Urutan</label><input type="number" value={editItem.sort_order} onChange={(e) => setEditItem({ ...editItem, sort_order: Number(e.target.value) })} /></div>
-                <div className="form-group"><div className="toggle-wrapper"><button className={`toggle ${editItem.is_active ? "active" : ""}`} onClick={() => setEditItem({ ...editItem, is_active: !editItem.is_active })} type="button" /><span style={{ fontSize: "0.88rem" }}>Aktif</span></div></div>
-              </div>
+              <div className="form-group"><label>Urutan</label><input type="number" value={editItem.sortOrder} onChange={(e) => setEditItem({ ...editItem, sortOrder: Number(e.target.value) })} /></div>
             </div>
             <div className="modal-footer">
               <button className="btn btn-outline btn-sm" onClick={() => setModalOpen(false)}>Batal</button>
